@@ -1,0 +1,19 @@
+.answers {
+    background-color: lightcyan;
+}
+.possibilities {
+    background-color: lightgreen;
+}
+
+.red-border {
+    border: 5px solid red;
+}
+
+.goals {
+    color: green;
+    font-size: 35px;
+}
+
+table {
+    font-size: 50px;
+}

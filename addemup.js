@@ -1,76 +1,124 @@
 $(document).on('ready', function() {
 
+  var $selected;
 
-  var firstNum;
+  var answersCellTmpl = Handlebars.compile($('#tmpl-answers-cell').html());
+  var possibilitiesCellTmpl = Handlebars.compile($('#tmpl-possibilities-cell').html());
+
+  var MAX_NUMBER = 10;
+
+  var generateGame = function(num) {
+    num = num || 3;
+    var $table = $('#main-table');
+
+    var possibilities = [];
+    _.times(num, function() {
+      var row = [];
+      _.times(num, function() {
+        row.push(_.random(1, MAX_NUMBER));
+      });
+      possibilities.push(row);
+    });
+
+    console.log(possibilities);
+    var sum = function(arr) {
+      return _.reduce(arr, function(memo, num){ return memo + num; }, 0);
+    };
+
+    // Calculate the end rows.
+    var rowSums = [];
+    _.each(possibilities, function(el) {
+      rowSums.push(sum(el));
+    });
+
+    var colSums = [];
+    // Transpose matrix, and then reverse it, because I think you need to.
+    _.each(_.zip.apply(_, possibilities), function(el) {
+      colSums.push(sum(el));
+      colSums.reverse();
+    });
+
+
+    // Generate the header row, with the goals.
+    var $headerRow = $('<tr></tr>');
+    _.each(colSums, function(el) {
+      var generatedTemplate = answersCellTmpl({goal: el});
+      $headerRow.append(generatedTemplate);
+    });
+    $headerRow.append('<td></td>');
+    $table.append($headerRow);
+
+
+    // Generate body.
+    var randomizedPossibilities = _.shuffle(_.flatten(possibilities));
+    var $el;
+    _.each(randomizedPossibilities, function(el, i) {
+      if(i % num == 0) {
+        if($el) {
+          $table.append($el);
+        }
+        $el = $('<tr></tr>');
+      }
+      $el.append(possibilitiesCellTmpl({possibility: el}));
+    });
+    $table.append($el);
+
+    // Now generate the right hand goal.
+
+    _.each(rowSums, function(el, i) {
+      $('tr', $table).eq(i + 1).append(answersCellTmpl({goal: el}));
+    });
+
+
+
+
+  };
+  generateGame(2);
+
 
   var recalculateAnswers = function() {
     var numRows = $('tr').length;
     var sum = 0;
+    // Sum up rows.
     for(var i = 2; i <= numRows; i++) {
       sum = 0;
       $('table tr:nth-child(' + i + ') td.possibilities').each(function() {
         sum += parseInt($(this).text());
       });
-      $('table tr:nth-child(' + i + ') td.answers').text(sum);
-
+      var $colHeaderCell = $('table tr:nth-child(' + i + ') td.answers-cell');
+      $('.current-val', $colHeaderCell).text(sum);
     }
-
+    // Sum up columns.
     for(var j = 1; j < numRows; j++) {
       sum = 0;
       $('table tr td.possibilities:nth-child(' + j + ')').each(function() {
         sum += parseInt($(this).text());
       });
-      $('table tr:first-child td.answers:nth-child(' + j + ')').text(sum);
+      var $rowEndCell = $('table tr:first-child td.answers-cell:nth-child(' + j + ')');
+      $('.current-val', $rowEndCell).text(sum);
     }
-
-//    var firstColumnElements = $('table tr td.possibilities:nth-child(1)');
-//    var firstElement = firstColumnElements.first();
-//    var secondElement = firstColumnElements.last();
-//    var firstColumnAnswer = parseInt(firstElement.text()) + parseInt(secondElement.text());
-//    $('#first-column-answer').text(firstColumnAnswer);
-//
-//    var secondColumnElements = $('table tr td.possibilities:nth-child(2)');
-//    firstElement = secondColumnElements.first();
-//    secondElement = secondColumnElements.last();
-//    var secondColumnAnswer = parseInt(firstElement.text()) + parseInt(secondElement.text());
-//    $('#second-column-answer').text(secondColumnAnswer);
-//
-//
-//    var firstRowElements = $('table tr:nth-child(2) td.possibilities');
-//    var firstElement = firstRowElements.first();
-//    var secondElement = firstRowElements.last();
-//    var firstRowAnswer = parseInt(firstElement.text()) + parseInt(secondElement.text());
-//    $('#first-row-answer').text(firstRowAnswer);
-//
-//    var secondRowElements = $('table tr:nth-child(3) td.possibilities');
-//    var firstElement = secondRowElements.first();
-//    var secondElement = secondRowElements.last();
-//    var firstRowAnswer = parseInt(firstElement.text()) + parseInt(secondElement.text());
-//    $('#second-row-answer').text(firstRowAnswer);
   };
 
-  recalculateAnswers();
-
   $('.possibilities').on('click', function(){
-    // Hint to Nathan: there is something called 'addClass'. Google it to figure out how to use it.
     $(this).toggleClass('red-border');
-    if(!firstNum) { // This is like saying: if firstNum isn't set (or is null).
-      firstNum = $(this);
+    if(!$selected) {
+      $selected = $(this);
     } else {
-      // First Num is set, so we must be on the second number!!
-      var firstNumValue = parseInt(firstNum.text());
+      // Execute the swap.
+      var $selectedValue = parseInt($selected.text());
       var secondNumValue = parseInt($(this).text());
-      // What we want to do is swap the numbers here.
-      // Example on how to set values:
-      firstNum.text(secondNumValue);
-      $(this).text(firstNumValue);
+      $selected.text(secondNumValue);
+      $(this).text($selectedValue);
       $('.possibilities').removeClass('red-border');
-
-      firstNum = null;
+      $selected = null;
       recalculateAnswers();
     }
 
   });
+
+  recalculateAnswers();
+
+
 });
 
 

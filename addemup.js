@@ -9,7 +9,6 @@ $(document).on('ready', function() {
 
   var generateGame = function(num) {
     num = num || 3;
-    var $table = $('#main-table');
 
     var possibilities = [];
     _.times(num, function() {
@@ -20,7 +19,7 @@ $(document).on('ready', function() {
       possibilities.push(row);
     });
 
-    console.log(possibilities);
+
     var sum = function(arr) {
       return _.reduce(arr, function(memo, num){ return memo + num; }, 0);
     };
@@ -39,41 +38,60 @@ $(document).on('ready', function() {
     });
 
 
-    // Generate the header row, with the goals.
-    var $headerRow = $('<tr></tr>');
-    _.each(colSums, function(el) {
-      var generatedTemplate = answersCellTmpl({goal: el});
-      $headerRow.append(generatedTemplate);
-    });
-    $headerRow.append('<td></td>');
-    $table.append($headerRow);
-
-
-    // Generate body.
-    var randomizedPossibilities = _.shuffle(_.flatten(possibilities));
-    var $el;
-    _.each(randomizedPossibilities, function(el, i) {
-      if(i % num == 0) {
-        if($el) {
-          $table.append($el);
-        }
-        $el = $('<tr></tr>');
+    var generateTable = function(numbers, $table, shuffle) {
+      if(shuffle) {
+        generateHeaderRow(numbers, $table);
       }
-      $el.append(possibilitiesCellTmpl({possibility: el}));
-    });
-    $table.append($el);
+      generateBody(numbers, $table, shuffle);
+      if(shuffle) {
+        generateLastColumn(numbers, $table);
+      }
+    };
 
-    // Now generate the right hand goal.
+    var generateHeaderRow = function(numbers, $table) {
+      // Generate the header row, with the goals.
+      var $headerRow = $('<tr></tr>');
+      _.each(colSums, function(el) {
+        var generatedTemplate = answersCellTmpl({goal: el});
+        $headerRow.append(generatedTemplate);
+      });
+      $headerRow.append('<td></td>');
+      $table.append($headerRow);
+    };
 
-    _.each(rowSums, function(el, i) {
-      $('tr', $table).eq(i + 1).append(answersCellTmpl({goal: el}));
-    });
+    var generateBody = function(numbers, $table, shuffle) {
+      if(shuffle) {
+        numbers = _.shuffle(_.flatten(numbers));
+      } else {
+        numbers = _.flatten(numbers);
+      }
+      var $el;
+      _.each(numbers, function(el, i) {
+        if(i % num == 0) {
+          if($el) {
+            $table.append($el);
+          }
+          $el = $('<tr></tr>');
+        }
+        $el.append(possibilitiesCellTmpl({possibility: el}));
+      });
+      $table.append($el);
 
+    };
 
+    var generateLastColumn = function(numbers, $table) {
+      _.each(rowSums, function(el, i) {
+        $('tr', $table).eq(i + 1).append(answersCellTmpl({goal: el}));
+      });
+    };
+
+    generateTable(possibilities, $('#main-table'), true);
+
+    generateTable(possibilities, $('#solutions-table'), false);
 
 
   };
-  generateGame(2);
+  generateGame(3);
 
 
   var recalculateAnswers = function() {
@@ -116,6 +134,10 @@ $(document).on('ready', function() {
       $('#moves-count').text(numMoves + 1);
     }
 
+  });
+  $('a').on('click', function(e) {
+    e.preventDefault();
+    $('#solutions-table').fadeToggle();
   });
 
   recalculateAnswers();

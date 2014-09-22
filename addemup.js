@@ -112,6 +112,8 @@ $(document).on('ready', function() {
       $('.possibilities').removeClass('red-border');
       $selected = null;
       recalculateAnswers();
+      var numMoves = parseInt($('#moves-count').text());
+      $('#moves-count').text(numMoves + 1);
     }
 
   });

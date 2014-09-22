@@ -95,24 +95,25 @@ $(document).on('ready', function() {
 
 
   var recalculateAnswers = function() {
-    var numRows = $('tr').length;
+    var $table = $('#main-table');
+    var numRows = $('tr', $table).length;
     var sum = 0;
     // Sum up rows.
     for(var i = 2; i <= numRows; i++) {
       sum = 0;
-      $('table tr:nth-child(' + i + ') td.possibilities').each(function() {
+      $('table#main-table tr:nth-child(' + i + ') td.possibilities').each(function() {
         sum += parseInt($(this).text());
       });
-      var $colHeaderCell = $('table tr:nth-child(' + i + ') td.answers-cell');
+      var $colHeaderCell = $('table#main-table tr:nth-child(' + i + ') td.answers-cell');
       $('.current-val', $colHeaderCell).text(sum);
     }
     // Sum up columns.
     for(var j = 1; j < numRows; j++) {
       sum = 0;
-      $('table tr td.possibilities:nth-child(' + j + ')').each(function() {
+      $('table#main-table tr td.possibilities:nth-child(' + j + ')').each(function() {
         sum += parseInt($(this).text());
       });
-      var $rowEndCell = $('table tr:first-child td.answers-cell:nth-child(' + j + ')');
+      var $rowEndCell = $('table#main-table tr:first-child td.answers-cell:nth-child(' + j + ')');
       $('.current-val', $rowEndCell).text(sum);
     }
   };

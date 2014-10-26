@@ -138,6 +138,11 @@ $(document).on('ready', function() {
         $rowEndCell.removeClass(answerClasses).addClass('too-low');
       }
     }
+
+    if( $('.too-high').length == 0 && $('.too-low').length == 0) {
+      alert ('you win');
+      window.location.reload();
+    }
   };
 
   $('.possibilities').on('click', function(){

@@ -31,10 +31,9 @@ $(document).on('ready', function() {
     });
 
     var colSums = [];
-    // Transpose matrix, and then reverse it, because I think you need to.
+    // Transpose matrix.
     _.each(_.zip.apply(_, possibilities), function(el) {
       colSums.push(sum(el));
-      colSums.reverse();
     });
 
 
@@ -98,6 +97,7 @@ $(document).on('ready', function() {
     var $table = $('#main-table');
     var numRows = $('tr', $table).length;
     var sum = 0;
+    var answerClasses = 'too-low just-right too-high';
     // Sum up rows.
     for(var i = 2; i <= numRows; i++) {
       sum = 0;
@@ -106,10 +106,17 @@ $(document).on('ready', function() {
       });
       var $colHeaderCell = $('table#main-table tr:nth-child(' + i + ') td.answers-cell');
 
-
-//      $('.current-val', $colHeaderCell).text(sum);
       var goal = parseInt($colHeaderCell.data('goal'));
-      $('.current-val', $colHeaderCell).text(sum - goal);
+      $colHeaderCell.text(sum - goal);
+      if(sum - goal > 0) {
+        $colHeaderCell.removeClass(answerClasses).addClass('too-high');
+      }
+      if(sum - goal == 0) {
+        $colHeaderCell.removeClass(answerClasses).addClass('just-right');
+      }
+      if(sum - goal < 0) {
+        $colHeaderCell.removeClass(answerClasses).addClass('too-low');
+      }
     }
 
     // Sum up columns.
@@ -120,7 +127,16 @@ $(document).on('ready', function() {
       });
       var $rowEndCell = $('table#main-table tr:first-child td.answers-cell:nth-child(' + j + ')');
       var goal = parseInt($rowEndCell.data('goal'));
-      $('.current-val', $rowEndCell).text(sum - goal);
+      $rowEndCell.text(sum - goal);
+      if(sum - goal > 0) {
+        $rowEndCell.removeClass(answerClasses).addClass('too-high');
+      }
+      if(sum - goal == 0) {
+        $rowEndCell.removeClass(answerClasses).addClass('just-right');
+      }
+      if(sum - goal < 0) {
+        $rowEndCell.removeClass(answerClasses).addClass('too-low');
+      }
     }
   };
 

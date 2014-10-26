@@ -10,9 +10,14 @@
     border: 5px solid red;
 }
 
-.goals {
+.too-low {
+    color: red;
+}
+.too-high {
+    color: black;
+}
+.just-right {
     color: green;
-    font-size: 35px;
 }
 
 table {

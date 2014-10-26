@@ -105,8 +105,13 @@ $(document).on('ready', function() {
         sum += parseInt($(this).text());
       });
       var $colHeaderCell = $('table#main-table tr:nth-child(' + i + ') td.answers-cell');
-      $('.current-val', $colHeaderCell).text(sum);
+
+
+//      $('.current-val', $colHeaderCell).text(sum);
+      var goal = parseInt($colHeaderCell.data('goal'));
+      $('.current-val', $colHeaderCell).text(sum - goal);
     }
+
     // Sum up columns.
     for(var j = 1; j < numRows; j++) {
       sum = 0;
@@ -114,7 +119,8 @@ $(document).on('ready', function() {
         sum += parseInt($(this).text());
       });
       var $rowEndCell = $('table#main-table tr:first-child td.answers-cell:nth-child(' + j + ')');
-      $('.current-val', $rowEndCell).text(sum);
+      var goal = parseInt($rowEndCell.data('goal'));
+      $('.current-val', $rowEndCell).text(sum - goal);
     }
   };
 

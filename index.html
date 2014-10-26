@@ -10,9 +10,10 @@
   <script type="text/javascript" src="underscore-min.js"></script>
   <script type="text/javascript" src="handlebars-v2.0.0.js"></script>
   <script id="tmpl-answers-cell" type="text/x-handlebars-template">
-    <td class="answers-cell">
+    <td class="answers-cell" data-goal="{{goal}}">
       <span class="current-val"> {{ currentVal }}</span>
-      <span class="goals"> {{ goal }} </span>
+      <!--<span class="goals"> {{ goal }} </span>-->
+
     </td>
   </script>
   <script id="tmpl-possibilities-cell" type="text/x-handlebars-template">
